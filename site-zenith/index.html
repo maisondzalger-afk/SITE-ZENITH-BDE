@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ZÉNITH — Student Hub ESAA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    --green-900:#122A21;
+    --green-700:#1E4A38;
+    --green-500:#2E6B52;
+    --green-300:#4C8B6D;
+    --cream:#F6F1E3;
+    --cream-hi:#FBF8EF;
+    --champagne:#C39A5C;
+    --champagne-hi:#DBBE87;
+    --ink:#1B1A15;
+    --ink-soft:#514F44;
+    --line:rgba(27,26,21,0.14);
+    --card:#FFFFFF;
+    --danger:#B3452F;
+    --radius-s:3px;
+    --radius-m:14px;
+    --bg:var(--cream);
+    --fg:var(--ink);
+  }
+  *{box-sizing:border-box; scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Work Sans', -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces', Georgia, serif;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+  ::selection{background:var(--champagne-hi); color:var(--green-900);}
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E1913;
+      --fg:#EDE7D6;
+      --ink-soft:#B9B2A0;
+      --card:#152720;
+      --line:rgba(237,231,214,0.14);
+      --cream-hi:#182A22;
+      --champagne-hi:#E2C48D;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E1913;
+    --fg:#EDE7D6;
+    --ink-soft:#B9B2A0;
+    --card:#152720;
+    --line:rgba(237,231,214,0.14);
+    --cream-hi:#182A22;
+    --champagne-hi:#E2C48D;
+  }
+
+  /* ---------- Header ---------- */
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:40;
+    background:var(--green-900);
+    color:var(--cream-hi);
+    border-bottom:1px solid rgba(0,0,0,0.2);
+  }
+  .top-inner{
+    max-width:1080px; margin:0 auto;
+    padding:14px 18px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .logo{
+    display:flex; align-items:baseline; gap:8px; cursor:pointer; user-select:none;
+  }
+  .logo .mark{font-family:'Fraunces',serif; font-weight:600; font-size:22px; letter-spacing:0.01em; color:var(--champagne-hi);}
+  .logo .sub{font-size:11px; color:rgba(246,241,227,0.6); display:none;}
+  @media(min-width:640px){.logo .sub{display:inline;}}
+  .search-wrap{flex:1; position:relative; max-width:300px; margin-left:auto;}
+  .search-wrap input{
+    width:100%; padding:8px 12px 8px 32px; border-radius:20px; border:1px solid rgba(246,241,227,0.25);
+    background:rgba(255,255,255,0.08); color:var(--cream-hi); font-size:13px;
+  }
+  .search-wrap input::placeholder{color:rgba(246,241,227,0.5);}
+  .search-wrap svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); width:14px; height:14px; opacity:0.6;}
+  .admin-toggle{
+    display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.08); border:1px solid rgba(246,241,227,0.25);
+    color:var(--cream-hi); border-radius:20px; padding:7px 12px; font-size:12.5px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  }
+  .admin-toggle svg{width:13px; height:13px;}
+  .admin-toggle.on{background:var(--champagne); color:var(--green-900); border-color:var(--champagne); font-weight:600;}
+
+  nav.tabs{
+    position:sticky; top:calc(env(safe-area-inset-top,0px) + 53px); z-index:39;
+    background:var(--bg);
+    border-bottom:1px solid var(--line);
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  .tabs-inner{
+    max-width:1080px; margin:0 auto; display:flex; gap:2px; padding:0 12px;
+    min-width:max-content;
+  }
+  .tab-btn{
+    background:none; border:none; padding:12px 14px 10px; font-size:13.5px; color:var(--ink-soft);
+    border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap;
+  }
+  .tab-btn.active{color:var(--green-700); border-bottom-color:var(--champagne); font-weight:600;}
+  :root[data-theme="dark"] .tab-btn.active{color:var(--champagne-hi);}
+  @media(prefers-color-scheme:dark){ :root:not([data-theme="light"]) .tab-btn.active{color:var(--champagne-hi);} }
+  .tab-btn.admin-only{display:none;}
+  body.is-admin .tab-btn.admin-only{display:inline-block;}
+
+  main{max-width:1080px; margin:0 auto; padding:22px 18px 80px;}
+  section.view{display:none;}
+  section.view.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  .admin-banner{
+    display:none; align-items:center; gap:10px; background:var(--champagne); color:var(--green-900);
+    border-radius:10px; padding:10px 14px; font-size:13px; font-weight:600; margin-bottom:18px;
+  }
+  body.is-admin .admin-banner{display:flex;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:end;
+    padding:34px 0 30px; border-bottom:1px solid var(--line); margin-bottom:26px;
+  }
+  @media(max-width:720px){.hero{grid-template-columns:1fr;}}
+  .hero h1{font-size:clamp(30px,5vw,46px); font-weight:500; line-height:1.05; margin:0 0 12px;}
+  .hero p.tag{color:var(--ink-soft); font-size:15.5px; max-width:46ch; margin:0;}
+  .hero .stat-block{border-left:2px solid var(--champagne); padding-left:16px; text-align:left;}
+  .hero .stat-block b{font-family:'Fraunces',serif; font-size:34px; display:block; font-weight:500;}
+  .hero .stat-block span{font-size:12.5px; color:var(--ink-soft);}
+
+  .quicklinks{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:30px;}
+  @media(max-width:720px){.quicklinks{grid-template-columns:repeat(2,1fr);}}
+  .qlink{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-m); padding:16px 14px; cursor:pointer; text-align:left; transition:border-color .15s;}
+  .qlink:hover{border-color:var(--champagne);}
+  .qlink .ic{width:20px; height:20px; margin-bottom:10px; color:var(--green-500);}
+  :root[data-theme="dark"] .qlink .ic{color:var(--champagne-hi);}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .qlink .ic{color:var(--champagne-hi);}}
+  .qlink b{display:block; font-size:14.5px; margin-bottom:2px;}
+  .qlink span{font-size:12px; color:var(--ink-soft);}
+
+  .split-two{display:grid; grid-template-columns:1.4fr 1fr; gap:20px;}
+  @media(max-width:800px){.split-two{grid-template-columns:1fr;}}
+
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-m); padding:18px 18px 6px;}
+  .panel h2{font-size:16px; margin:0 0 14px; font-weight:600; font-family:'Work Sans';}
+
+  .mini-row{display:flex; justify-content:space-between; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .mini-row:last-child{border-bottom:none;}
+  .mini-row .d{color:var(--champagne); font-weight:600; font-size:12px; min-width:56px; text-align:right;}
+  .mini-row .t{color:var(--ink-soft); font-size:12px;}
+
+  .banner{
+    background:var(--green-900); color:var(--cream-hi); border-radius:var(--radius-m);
+    padding:16px 18px; font-size:13.5px; margin-bottom:22px; display:flex; gap:12px; align-items:flex-start;
+  }
+  .banner svg{width:16px; height:16px; margin-top:2px; flex-shrink:0; color:var(--champagne-hi);}
+
+  .section-head{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:16px; flex-wrap:wrap;}
+  .section-head h2{font-size:24px; font-weight:500; margin:0;}
+  .section-head p{color:var(--ink-soft); font-size:13.5px; margin:4px 0 0;}
+
+  .filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; align-items:center;}
+  select, .chip-input{border:1px solid var(--line); background:var(--card); color:var(--fg); border-radius:20px; padding:7px 12px; font-size:13px;}
+
+  .grid-cards{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+  @media(max-width:720px){.grid-cards{grid-template-columns:1fr;}}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-m); padding:16px; position:relative;}
+  .card .kicker{font-size:11px; color:var(--champagne); font-weight:600; letter-spacing:0.02em; margin-bottom:6px;}
+  .card h3{font-size:15.5px; margin:0 0 6px; font-weight:600; font-family:'Work Sans';}
+  .card p{font-size:13px; color:var(--ink-soft); margin:0 0 12px;}
+  .card .meta{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .tagpill{font-size:11px; padding:3px 9px; border-radius:20px; background:var(--cream-hi); border:1px solid var(--line); color:var(--ink-soft);}
+  .card-foot{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+  .btn{border:none; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; background:var(--green-700); color:var(--cream-hi); transition:opacity .15s;}
+  .btn:hover{opacity:0.88;}
+  .btn.secondary{background:transparent; color:var(--green-700); border:1px solid var(--line);}
+  :root[data-theme="dark"] .btn.secondary{color:var(--champagne-hi);}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.secondary{color:var(--champagne-hi);}}
+  .btn.small{padding:6px 11px; font-size:12px;}
+  .btn.danger{background:var(--danger); color:#fff;}
+
+  .avatar{width:38px; height:38px; border-radius:50%; background:var(--green-500); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:14px; flex-shrink:0;}
+  .tutor-row{display:flex; gap:12px;}
+  .tutor-row .info{flex:1;}
+
+  form.form{display:flex; flex-direction:column; gap:12px;}
+  .form label{font-size:12.5px; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:5px;}
+  .form input[type=text], .form input[type=password], .form textarea, .form select{
+    width:100%; border:1px solid var(--line); background:var(--card); color:var(--fg); border-radius:8px; padding:9px 11px; font-size:14px; font-family:inherit;
+  }
+  .form textarea{min-height:80px; resize:vertical;}
+  .checkline{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft);}
+
+  .idea-card{border-left:3px solid var(--champagne);}
+  .status-track{display:flex; gap:4px; margin:8px 0 10px; flex-wrap:wrap;}
+  .status-step{font-size:10.5px; padding:3px 8px; border-radius:12px; background:var(--cream-hi); color:var(--ink-soft); border:1px solid var(--line);}
+  .status-step.done{background:var(--green-700); color:#fff; border-color:var(--green-700);}
+  .vote-btn{display:flex; align-items:center; gap:6px; background:var(--cream-hi); border:1px solid var(--line); border-radius:20px; padding:6px 12px; font-size:13px; cursor:pointer; color:var(--fg);}
+  .vote-btn.voted{border-color:var(--champagne); color:var(--champagne);}
+
+  .empty{text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:13.5px; border:1px dashed var(--line); border-radius:var(--radius-m);}
+
+  .toast{
+    position:fixed; bottom:calc(20px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--green-900); color:var(--cream-hi); padding:11px 20px; border-radius:30px; font-size:13.5px;
+    opacity:0; pointer-events:none; transition:all .25s; z-index:100; box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .profile-head{display:flex; gap:14px; align-items:center; margin-bottom:22px;}
+  .profile-head .avatar{width:56px; height:56px; font-size:20px;}
+  .profile-head h2{margin:0; font-size:20px; font-weight:500;}
+  .profile-head span{color:var(--ink-soft); font-size:13px;}
+
+  footer{border-top:1px solid var(--line); margin-top:40px; padding:24px 18px 40px; text-align:center; color:var(--ink-soft); font-size:12.5px;}
+  footer .fmark{font-family:'Fraunces',serif; font-style:italic; color:var(--champagne);}
+
+  /* ---------- Admin controls on cards ---------- */
+  .edit-tools{display:none; position:absolute; top:10px; right:10px; gap:6px;}
+  body.is-admin .edit-tools{display:flex;}
+  .icon-btn{
+    width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:var(--card);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);
+  }
+  .icon-btn svg{width:13px; height:13px;}
+  .icon-btn:hover{border-color:var(--champagne); color:var(--champagne);}
+  .icon-btn.del:hover{border-color:var(--danger); color:var(--danger);}
+  .add-btn{display:none;}
+  body.is-admin .add-btn{display:inline-flex; align-items:center; gap:6px;}
+
+  /* ---------- Modals ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(10,15,12,0.55); z-index:200; display:none;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:var(--bg); border-radius:16px; padding:22px; width:100%; max-width:420px;
+    max-height:85vh; overflow-y:auto; border:1px solid var(--line);
+  }
+  .modal-box h3{margin:0 0 6px; font-size:19px; font-weight:500;}
+  .modal-box .sub{font-size:12.5px; color:var(--ink-soft); margin:0 0 16px;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:16px;}
+
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:8px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="logo" onclick="showView('accueil')">
+      <span class="mark">ZÉNITH</span>
+      <span class="sub">Student Hub · ESAA</span>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="globalSearch" type="text" placeholder="Rechercher…" oninput="onGlobalSearch(this.value)">
+    </div>
+    <button class="admin-toggle" id="adminToggleBtn" onclick="onAdminToggleClick()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span id="adminToggleLabel">BDE</span>
+    </button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-inner" id="tabsInner">
+    <button class="tab-btn active" data-view="accueil">Accueil</button>
+    <button class="tab-btn" data-view="ressources">Ressources</button>
+    <button class="tab-btn" data-view="tutorat">Tutorat</button>
+    <button class="tab-btn" data-view="evenements">Événements</button>
+    <button class="tab-btn" data-view="associations">Associations</button>
+    <button class="tab-btn" data-view="opportunites">Opportunités</button>
+    <button class="tab-btn" data-view="idees">Boîte à idées</button>
+    <button class="tab-btn" data-view="espace">Mon espace</button>
+    <button class="tab-btn admin-only" data-view="equipe">Équipe BDE</button>
+  </div>
+</nav>
+
+<main>
+
+  <div class="admin-banner">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Mode BDE actif — vous pouvez ajouter, modifier et supprimer le contenu de la plateforme.
+  </div>
+
+  <!-- ACCUEIL -->
+  <section class="view active" id="view-accueil">
+    <div class="banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span><b>Inscriptions tutorat de rentrée</b> — les créneaux de la semaine 3 ouvrent vendredi à 18h. Réservez tôt, les places partent vite.</span>
+    </div>
+
+    <div class="hero">
+      <div>
+        <h1>Tout l'utile de la vie étudiante ESAA, au même endroit.</h1>
+        <p class="tag">Ressources, tutorat entre étudiants, événements, associations et opportunités — proposé par le Bureau des Étudiants ZÉNITH.</p>
+      </div>
+      <div class="stat-block">
+        <b>142</b>
+        <span>séances de tutorat organisées ce semestre</span>
+      </div>
+    </div>
+
+    <div class="quicklinks">
+      <button class="qlink" onclick="showView('ressources')">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <b>Resource Bank</b><span>Fiches, examens et méthodes par niveau</span>
+      </button>
+      <button class="qlink" onclick="showView('tutorat')">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <b>Trouver un tuteur</b><span>Par matière, niveau et disponibilité</span>
+      </button>
+      <button class="qlink" onclick="showView('idees')">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.05V17h6v-.25c0-.85.4-1.55 1-2.05A7 7 0 0 0 12 2z"/></svg>
+        <b>Boîte à idées</b><span>Proposez, votez, suivez le résultat</span>
+      </button>
+      <button class="qlink" onclick="showView('opportunites')">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9z"/></svg>
+        <b>Opportunités</b><span>Stages, bourses, concours, hackathons</span>
+      </button>
+    </div>
+
+    <div class="split-two">
+      <div class="panel">
+        <h2>À la une</h2>
+        <div id="highlightList"></div>
+      </div>
+      <div class="panel">
+        <h2>À venir</h2>
+        <div id="upcomingList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESSOURCES -->
+  <section class="view" id="view-ressources">
+    <div class="section-head">
+      <div>
+        <h2>Resource Bank</h2>
+        <p>Bibliothèque organisée par niveau, matière et type de document.</p>
+      </div>
+      <button class="btn add-btn" onclick="openEditor('resources')">+ Ajouter une ressource</button>
+    </div>
+    <div class="filters">
+      <select id="fNiveau" onchange="renderResources()">
+        <option value="">Tous niveaux</option>
+        <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+      </select>
+      <select id="fMatiere" onchange="renderResources()">
+        <option value="">Toutes matières</option>
+        <option>Marketing</option><option>Finance</option><option>Comptabilité</option><option>Économie</option><option>Droit des affaires</option><option>Management</option>
+      </select>
+      <select id="fType" onchange="renderResources()">
+        <option value="">Tous types</option>
+        <option>Résumé</option><option>Ancien examen</option><option>Fiche</option><option>Exercice corrigé</option><option>Méthode</option>
+      </select>
+    </div>
+    <div class="grid-cards" id="resourceGrid"></div>
+  </section>
+
+  <!-- TUTORAT -->
+  <section class="view" id="view-tutorat">
+    <div class="section-head">
+      <div>
+        <h2>Peer Tutoring</h2>
+        <p>Trouvez un·e étudiant·e tuteur·rice validé·e par le BDE.</p>
+      </div>
+      <button class="btn add-btn" onclick="openEditor('tutors')">+ Ajouter un tuteur</button>
+    </div>
+    <div class="filters">
+      <select id="tMatiere" onchange="renderTutors()">
+        <option value="">Toutes matières</option>
+        <option>Marketing</option><option>Finance</option><option>Comptabilité</option><option>Économie</option><option>Droit des affaires</option><option>Management</option>
+      </select>
+      <select id="tMode" onchange="renderTutors()">
+        <option value="">Présentiel ou visio</option>
+        <option>Présentiel</option><option>Visio</option>
+      </select>
+    </div>
+    <div class="grid-cards" id="tutorGrid"></div>
+  </section>
+
+  <!-- EVENEMENTS -->
+  <section class="view" id="view-evenements">
+    <div class="section-head">
+      <div>
+        <h2>Événements</h2>
+        <p>Calendrier de la vie étudiante ESAA.</p>
+      </div>
+      <button class="btn add-btn" onclick="openEditor('events')">+ Ajouter un événement</button>
+    </div>
+    <div class="filters">
+      <select id="eCat" onchange="renderEvents()">
+        <option value="">Toutes catégories</option>
+        <option>Académique</option><option>Association</option><option>Sport</option><option>Culture</option><option>Entrepreneuriat</option><option>Solidarité</option>
+      </select>
+    </div>
+    <div class="grid-cards" id="eventGrid"></div>
+  </section>
+
+  <!-- ASSOCIATIONS -->
+  <section class="view" id="view-associations">
+    <div class="section-head">
+      <div>
+        <h2>Associations &amp; clubs</h2>
+        <p>Annuaire des collectifs étudiants reconnus par le BDE.</p>
+      </div>
+      <button class="btn add-btn" onclick="openEditor('associations')">+ Ajouter une association</button>
+    </div>
+    <div class="grid-cards" id="assoGrid"></div>
+  </section>
+
+  <!-- OPPORTUNITES -->
+  <section class="view" id="view-opportunites">
+    <div class="section-head">
+      <div>
+        <h2>Opportunités</h2>
+        <p>Stages, concours, bourses et programmes à ne pas manquer.</p>
+      </div>
+      <button class="btn add-btn" onclick="openEditor('opportunities')">+ Ajouter une opportunité</button>
+    </div>
+    <div class="filters">
+      <select id="oCat" onchange="renderOpps()">
+        <option value="">Toutes catégories</option>
+        <option>Stage</option><option>Concours</option><option>Bourse</option><option>Hackathon</option><option>Programme international</option>
+      </select>
+    </div>
+    <div class="grid-cards" id="oppGrid"></div>
+  </section>
+
+  <!-- IDEES -->
+  <section class="view" id="view-idees">
+    <div class="section-head">
+      <div>
+        <h2>Boîte à idées</h2>
+        <p>Proposez une idée au BDE, votez pour celles des autres.</p>
+      </div>
+    </div>
+    <div class="split-two">
+      <div>
+        <div class="grid-cards" id="ideaGrid" style="grid-template-columns:1fr;"></div>
+      </div>
+      <div class="panel" style="height:fit-content;">
+        <h2>Nouvelle idée</h2>
+        <form class="form" onsubmit="submitIdea(event)">
+          <div>
+            <label>Titre</label>
+            <input type="text" id="ideaTitle" required placeholder="Ex : Micro-ondes en salle étudiante">
+          </div>
+          <div>
+            <label>Description</label>
+            <textarea id="ideaDesc" required placeholder="Décrivez votre idée en quelques phrases"></textarea>
+          </div>
+          <div>
+            <label>Catégorie</label>
+            <select id="ideaCat">
+              <option>Académique</option><option>Vie étudiante</option><option>Événements</option><option>Sport</option><option>Culture</option><option>Solidarité</option><option>Campus</option><option>Autre</option>
+            </select>
+          </div>
+          <label class="checkline"><input type="checkbox" id="ideaAnon"> Publier anonymement</label>
+          <button class="btn" type="submit">Envoyer au BDE</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- MON ESPACE -->
+  <section class="view" id="view-espace">
+    <div class="profile-head">
+      <div class="avatar">A</div>
+      <div>
+        <h2>Amel B.</h2>
+        <span>L3 · Marketing &amp; Communication</span>
+      </div>
+    </div>
+    <div class="split-two">
+      <div class="panel">
+        <h2>Mes demandes de tutorat</h2>
+        <div id="myRequests"></div>
+      </div>
+      <div class="panel">
+        <h2>Mes idées soumises</h2>
+        <div id="myIdeas"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EQUIPE BDE (admin) -->
+  <section class="view" id="view-equipe">
+    <div class="section-head">
+      <div>
+        <h2>Équipe BDE ZÉNITH</h2>
+        <p>Membres visibles publiquement sur la page « Associations ». Visible ici uniquement en mode BDE.</p>
+      </div>
+      <button class="btn add-btn" onclick="openEditor('team')">+ Ajouter un membre</button>
+    </div>
+    <div class="grid-cards" id="teamGrid"></div>
+  </section>
+
+</main>
+
+<footer>
+  Une plateforme conçue par le <span class="fmark">Bureau des Étudiants ZÉNITH</span> — École Supérieure Algérienne des Affaires<br>
+  Ceci est un prototype de démonstration : les données saisies restent dans votre navigateur.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- Login modal -->
+<div class="modal-overlay" id="loginOverlay">
+  <div class="modal-box" style="max-width:340px;">
+    <h3>Accès BDE</h3>
+    <p class="sub">Réservé aux membres du Bureau des Étudiants ZÉNITH.</p>
+    <form class="form" onsubmit="tryLogin(event)">
+      <div>
+        <label>Mot de passe</label>
+        <input type="password" id="adminPass" placeholder="••••••" autocomplete="off">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn secondary" onclick="closeLogin()">Annuler</button>
+        <button type="submit" class="btn">Entrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Generic editor modal -->
+<div class="modal-overlay" id="editorOverlay">
+  <div class="modal-box">
+    <h3 id="editorTitle">Ajouter</h3>
+    <p class="sub" id="editorSub"></p>
+    <form class="form" id="editorForm" onsubmit="saveEditor(event)"></form>
+  </div>
+</div>
+
+<script>
+/* ---------------- Default seed data ---------------- */
+const DEFAULTS = {
+  team: [
+    {id:'t1', nom:'Sarah M.', role:'Présidente'},
+    {id:'t2', nom:'Yanis R.', role:'Vice-président'},
+    {id:'t3', nom:'Lina B.', role:'Responsable Tutorat'},
+    {id:'t4', nom:'Karim D.', role:'Trésorier'},
+  ],
+  resources: [
+    {id:'r1', niveau:"L1", matiere:"Comptabilité", type:"Fiche", titre:"Le bilan comptable simplifié", desc:"Fiche de synthèse sur la lecture d'un bilan.", verifie:true},
+    {id:'r2', niveau:"L1", matiere:"Économie", type:"Résumé", titre:"Microéconomie — chapitre offre/demande", desc:"Résumé de cours illustré d'exemples.", verifie:true},
+    {id:'r3', niveau:"L2", matiere:"Marketing", type:"Ancien examen", titre:"Examen marketing fondamental 2025", desc:"Sujet et corrigé de l'année dernière.", verifie:true},
+    {id:'r4', niveau:"L2", matiere:"Finance", type:"Exercice corrigé", titre:"Calcul de VAN et TRI — 8 exercices", desc:"Série d'exercices corrigés pas à pas.", verifie:false},
+    {id:'r5', niveau:"L3", matiere:"Droit des affaires", type:"Fiche", titre:"Les sociétés commerciales en Algérie", desc:"Panorama des formes juridiques d'entreprise.", verifie:true},
+    {id:'r6', niveau:"L3", matiere:"Management", type:"Méthode", titre:"Méthodologie de l'étude de cas", desc:"Trame pas à pas pour traiter un cas en 2h.", verifie:true},
+    {id:'r7', niveau:"M1", matiere:"Finance", type:"Résumé", titre:"Marchés financiers — vue d'ensemble", desc:"Synthèse des mécanismes de marché.", verifie:true},
+    {id:'r8', niveau:"M2", matiere:"Management", type:"Ancien examen", titre:"Stratégie d'entreprise — partiel 2024", desc:"Sujet complet avec grille d'évaluation.", verifie:false},
+  ],
+  tutors: [
+    {id:'tu1', nom:"Yasmine K.", niveau:"M1", matieres:["Finance","Comptabilité"], mode:"Visio", dispo:"Lun & Jeu soir", badge:true},
+    {id:'tu2', nom:"Riyad S.", niveau:"L3", matieres:["Marketing"], mode:"Présentiel", dispo:"Mercredi après-midi", badge:true},
+    {id:'tu3', nom:"Nour H.", niveau:"L3", matieres:["Économie","Droit des affaires"], mode:"Visio", dispo:"Week-end", badge:false},
+    {id:'tu4', nom:"Adam T.", niveau:"M2", matieres:["Management"], mode:"Présentiel", dispo:"Mardi soir", badge:true},
+  ],
+  events: [
+    {id:'e1', date:"28 SEP", cat:"Académique", titre:"Atelier CV & LinkedIn", lieu:"Amphi B", desc:"Session pratique avec le pôle carrière."},
+    {id:'e2', date:"03 OCT", cat:"Culture", titre:"Soirée d'intégration ZÉNITH", lieu:"Campus principal", desc:"Concert, stands associatifs et jeux."},
+    {id:'e3', date:"11 OCT", cat:"Entrepreneuriat", titre:"Pitch Night étudiant", lieu:"Auditorium", desc:"10 projets étudiants présentés en 3 minutes."},
+    {id:'e4', date:"19 OCT", cat:"Solidarité", titre:"Collecte alimentaire BDE", lieu:"Hall principal", desc:"Dépôt de dons toute la semaine."},
+  ],
+  associations: [
+    {id:'a1', nom:"ESAA Finance Club", desc:"Analyse de marchés, conférences et cas pratiques en finance.", contact:"financeclub@esaa.dz"},
+    {id:'a2', nom:"Junior Entreprise ESAA", desc:"Missions de conseil réelles pour des entreprises partenaires.", contact:"je@esaa.dz"},
+    {id:'a3', nom:"ESAA Debate Society", desc:"Club de débat et d'art oratoire, compétitions inter-écoles.", contact:"debate@esaa.dz"},
+    {id:'a4', nom:"Club Solidarité ZÉNITH", desc:"Actions caritatives et sensibilisation sociale sur le campus.", contact:"solidarite@esaa.dz"},
+  ],
+  opportunities: [
+    {id:'o1', cat:"Stage", titre:"Stage été — Contrôle de gestion", org:"Groupe Cevital", limite:"15 oct."},
+    {id:'o2', cat:"Concours", titre:"Prix national du meilleur business plan", org:"Ministère de l'Industrie", limite:"30 oct."},
+    {id:'o3', cat:"Bourse", titre:"Bourse d'échange semestre à l'étranger", org:"ESAA International", limite:"05 nov."},
+    {id:'o4', cat:"Hackathon", titre:"FinTech Hackathon Alger", org:"Algeria Startup Fund", limite:"20 oct."},
+  ],
+};
+const seedIdeas = [
+  {titre:"Salle calme pour révisions", desc:"Aménager une salle silencieuse dédiée au travail individuel.", cat:"Campus", statut:2, votes:34, anon:false},
+  {titre:"Créneaux tutorat le dimanche", desc:"Ouvrir des créneaux le dimanche matin pour les étudiants en internat.", cat:"Académique", statut:1, votes:19, anon:true},
+  {titre:"Composteur sur le campus", desc:"Installer un point de compost près de la cafétéria.", cat:"Solidarité", statut:3, votes:41, anon:false},
+];
+const STATUTS = ["Reçue","En étude","Validée","En préparation","Réalisée"];
+const ADMIN_PASSWORD = "002";
+
+/* ---------------- Field schemas for the generic editor ---------------- */
+const SCHEMAS = {
+  team: {label:'un membre du BDE', fields:[
+    {key:'nom', label:'Nom', type:'text'},
+    {key:'role', label:'Rôle', type:'text'},
+  ]},
+  resources: {label:'une ressource', fields:[
+    {key:'niveau', label:'Niveau', type:'select', options:['L1','L2','L3','M1','M2']},
+    {key:'matiere', label:'Matière', type:'select', options:['Marketing','Finance','Comptabilité','Économie','Droit des affaires','Management']},
+    {key:'type', label:'Type', type:'select', options:['Résumé','Ancien examen','Fiche','Exercice corrigé','Méthode']},
+    {key:'titre', label:'Titre', type:'text'},
+    {key:'desc', label:'Description', type:'textarea'},
+    {key:'verifie', label:'Vérifié par le BDE', type:'checkbox'},
+  ]},
+  tutors: {label:'un tuteur', fields:[
+    {key:'nom', label:'Nom', type:'text'},
+    {key:'niveau', label:'Niveau', type:'select', options:['L1','L2','L3','M1','M2']},
+    {key:'matieresStr', label:'Matières (séparées par des virgules)', type:'text'},
+    {key:'mode', label:'Mode', type:'select', options:['Présentiel','Visio']},
+    {key:'dispo', label:'Disponibilité', type:'text'},
+    {key:'badge', label:'Tuteur validé par le BDE', type:'checkbox'},
+  ]},
+  events: {label:'un événement', fields:[
+    {key:'date', label:'Date (ex : 28 SEP)', type:'text'},
+    {key:'cat', label:'Catégorie', type:'select', options:['Académique','Association','Sport','Culture','Entrepreneuriat','Solidarité']},
+    {key:'titre', label:'Titre', type:'text'},
+    {key:'lieu', label:'Lieu', type:'text'},
+    {key:'desc', label:'Description', type:'textarea'},
+  ]},
+  associations: {label:'une association', fields:[
+    {key:'nom', label:'Nom', type:'text'},
+    {key:'desc', label:'Description', type:'textarea'},
+    {key:'contact', label:'Contact (email)', type:'text'},
+  ]},
+  opportunities: {label:'une opportunité', fields:[
+    {key:'cat', label:'Catégorie', type:'select', options:['Stage','Concours','Bourse','Hackathon','Programme international']},
+    {key:'titre', label:'Titre', type:'text'},
+    {key:'org', label:'Organisation', type:'text'},
+    {key:'limite', label:'Date limite', type:'text'},
+  ]},
+};
+
+/* ---------------- State ---------------- */
+let DATA = {};
+let ideas = [];
+let myRequests = [];
+let isAdmin = false;
+
+function loadState(){
+  try{ DATA = JSON.parse(localStorage.getItem('zenith_data') || 'null') || JSON.parse(JSON.stringify(DEFAULTS)); }
+  catch(e){ DATA = JSON.parse(JSON.stringify(DEFAULTS)); }
+  try{ ideas = JSON.parse(localStorage.getItem('zenith_ideas') || 'null') || seedIdeas.map((i,idx)=>({...i,id:'seed'+idx,voted:false})); }
+  catch(e){ ideas = seedIdeas.map((i,idx)=>({...i,id:'seed'+idx,voted:false})); }
+  try{ myRequests = JSON.parse(localStorage.getItem('zenith_requests') || '[]'); }catch(e){ myRequests = []; }
+  try{ isAdmin = sessionStorage.getItem('zenith_admin') === '1'; }catch(e){ isAdmin = false; }
+}
+function persistData(){ try{ localStorage.setItem('zenith_data', JSON.stringify(DATA)); }catch(e){} }
+function persistIdeas(){ try{ localStorage.setItem('zenith_ideas', JSON.stringify(ideas)); }catch(e){} }
+function persistRequests(){ try{ localStorage.setItem('zenith_requests', JSON.stringify(myRequests)); }catch(e){} }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+/* ---------------- Admin login ---------------- */
+function applyAdminUI(){
+  document.body.classList.toggle('is-admin', isAdmin);
+  document.getElementById('adminToggleBtn').classList.toggle('on', isAdmin);
+  document.getElementById('adminToggleLabel').textContent = isAdmin ? 'Mode BDE' : 'BDE';
+}
+function onAdminToggleClick(){
+  if(isAdmin){
+    isAdmin = false;
+    try{ sessionStorage.removeItem('zenith_admin'); }catch(e){}
+    applyAdminUI();
+    toast('Déconnecté du mode BDE');
+    if(document.getElementById('view-equipe').classList.contains('active')) showView('accueil');
+  } else {
+    document.getElementById('adminPass').value = '';
+    document.getElementById('loginOverlay').classList.add('show');
+    setTimeout(()=>document.getElementById('adminPass').focus(), 50);
+  }
+}
+function closeLogin(){ document.getElementById('loginOverlay').classList.remove('show'); }
+function tryLogin(ev){
+  ev.preventDefault();
+  const val = document.getElementById('adminPass').value;
+  if(val === ADMIN_PASSWORD){
+    isAdmin = true;
+    try{ sessionStorage.setItem('zenith_admin','1'); }catch(e){}
+    applyAdminUI();
+    closeLogin();
+    toast('Mode BDE activé — modification autorisée');
+  } else {
+    toast('Mot de passe incorrect');
+  }
+}
+
+/* ---------------- Navigation ---------------- */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.getElementById('tabsInner').addEventListener('click', e=>{
+  const btn = e.target.closest('.tab-btn');
+  if(btn) showView(btn.dataset.view);
+});
+
+/* ---------------- Generic editor modal ---------------- */
+let editorCtx = {type:null, id:null};
+function editTools(type, id){
+  if(!isAdmin) return '';
+  return `<div class="edit-tools">
+    <button class="icon-btn" title="Modifier" onclick="event.stopPropagation(); openEditor('${type}','${id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+    </button>
+    <button class="icon-btn del" title="Supprimer" onclick="event.stopPropagation(); deleteItem('${type}','${id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+    </button>
+  </div>`;
+}
+function openEditor(type, id){
+  if(!isAdmin){ toast('Connectez-vous en mode BDE pour modifier'); return; }
+  editorCtx = {type, id: id || null};
+  const schema = SCHEMAS[type];
+  const item = id ? DATA[type].find(x=>x.id===id) : null;
+  document.getElementById('editorTitle').textContent = item ? 'Modifier' : 'Ajouter';
+  document.getElementById('editorSub').textContent = (item ? 'Modifier ' : 'Ajouter ') + schema.label;
+  const form = document.getElementById('editorForm');
+  form.innerHTML = schema.fields.map(f=>{
+    let value = item ? item[f.key] : '';
+    if(f.key==='matieresStr' && item) value = (item.matieres||[]).join(', ');
+    if(f.type==='select'){
+      return `<div><label>${f.label}</label><select id="ef_${f.key}">${f.options.map(o=>`<option ${o===value?'selected':''}>${o}</option>`).join('')}</select></div>`;
+    }
+    if(f.type==='textarea'){
+      return `<div><label>${f.label}</label><textarea id="ef_${f.key}">${value||''}</textarea></div>`;
+    }
+    if(f.type==='checkbox'){
+      return `<label class="checkline"><input type="checkbox" id="ef_${f.key}" ${value?'checked':''}> ${f.label}</label>`;
+    }
+    return `<div><label>${f.label}</label><input type="text" id="ef_${f.key}" value="${(value||'').toString().replace(/"/g,'&quot;')}"></div>`;
+  }).join('') + `<div class="modal-actions">
+      <button type="button" class="btn secondary" onclick="closeEditor()">Annuler</button>
+      <button type="submit" class="btn">Enregistrer</button>
+    </div>`;
+  document.getElementById('editorOverlay').classList.add('show');
+}
+function closeEditor(){ document.getElementById('editorOverlay').classList.remove('show'); }
+function saveEditor(ev){
+  ev.preventDefault();
+  const {type, id} = editorCtx;
+  const schema = SCHEMAS[type];
+  const obj = {};
+  schema.fields.forEach(f=>{
+    const el = document.getElementById('ef_'+f.key);
+    if(f.type==='checkbox') obj[f.key] = el.checked;
+    else obj[f.key] = el.value.trim();
+  });
+  if(obj.matieresStr !== undefined){
+    obj.matieres = obj.matieresStr.split(',').map(s=>s.trim()).filter(Boolean);
+    delete obj.matieresStr;
+  }
+  if(id){
+    const idx = DATA[type].findIndex(x=>x.id===id);
+    DATA[type][idx] = {...DATA[type][idx], ...obj};
+  } else {
+    obj.id = type + '_' + Date.now();
+    DATA[type].unshift(obj);
+  }
+  persistData();
+  closeEditor();
+  toast(id ? 'Modifications enregistrées' : 'Ajouté avec succès');
+  renderAll();
+}
+function deleteItem(type, id){
+  if(!isAdmin) return;
+  if(!confirm('Supprimer cet élément ?')) return;
+  DATA[type] = DATA[type].filter(x=>x.id!==id);
+  persistData();
+  toast('Élément supprimé');
+  renderAll();
+}
+
+/* ---------------- Renderers ---------------- */
+function renderResources(){
+  const n=document.getElementById('fNiveau').value, m=document.getElementById('fMatiere').value, t=document.getElementById('fType').value;
+  const list = DATA.resources.filter(r=>(!n||r.niveau===n)&&(!m||r.matiere===m)&&(!t||r.type===t));
+  const grid = document.getElementById('resourceGrid');
+  grid.innerHTML = list.length ? list.map(r=>`
+    <div class="card">
+      ${editTools('resources', r.id)}
+      <div class="kicker">${r.niveau} · ${r.matiere}</div>
+      <h3>${r.titre}</h3>
+      <p>${r.desc}</p>
+      <div class="meta"><span class="tagpill">${r.type}</span><span class="tagpill">${r.verifie?'Vérifié':'Non vérifié'}</span></div>
+      <div class="card-foot"><button class="btn small" onclick="toast('Téléchargement simulé')">Télécharger</button></div>
+    </div>`).join('') : `<div class="empty">Aucune ressource ne correspond à ces filtres.</div>`;
+}
+
+function renderTutors(){
+  const m=document.getElementById('tMatiere').value, mode=document.getElementById('tMode').value;
+  const list = DATA.tutors.filter(t=>(!m||t.matieres.includes(m))&&(!mode||t.mode===mode));
+  const grid = document.getElementById('tutorGrid');
+  grid.innerHTML = list.length ? list.map(t=>`
+    <div class="card">
+      ${editTools('tutors', t.id)}
+      <div class="tutor-row">
+        <div class="avatar">${t.nom[0]}</div>
+        <div class="info">
+          <h3>${t.nom} ${t.badge?'· <span style="color:var(--champagne); font-size:12px; font-weight:600;">Tuteur validé</span>':''}</h3>
+          <div class="meta">${t.matieres.map(x=>`<span class="tagpill">${x}</span>`).join('')}<span class="tagpill">${t.niveau}</span></div>
+          <p style="margin-bottom:8px;">${t.mode} · ${t.dispo}</p>
+          <button class="btn small" onclick="bookTutor('${t.nom.replace(/'/g,"")}')">Demander une séance</button>
+        </div>
+      </div>
+    </div>`).join('') : `<div class="empty">Aucun tuteur ne correspond à ces filtres.</div>`;
+}
+
+function bookTutor(name){
+  myRequests.unshift({tuteur:name, date:new Date().toLocaleDateString('fr-FR'), statut:'En attente'});
+  persistRequests();
+  toast('Demande envoyée à '+name+' — suivez-la dans Mon espace');
+  renderEspace();
+}
+
+function renderEvents(){
+  const c=document.getElementById('eCat').value;
+  const list = DATA.events.filter(e=>!c||e.cat===c);
+  const grid = document.getElementById('eventGrid');
+  grid.innerHTML = list.length ? list.map(e=>`
+    <div class="card">
+      ${editTools('events', e.id)}
+      <div class="kicker">${e.cat}</div>
+      <h3>${e.titre}</h3>
+      <p>${e.desc}</p>
+      <div class="meta"><span class="tagpill">${e.date}</span><span class="tagpill">${e.lieu}</span></div>
+      <div class="card-foot">
+        <button class="btn small" onclick="toggleRSVP(this)">S'inscrire</button>
+      </div>
+    </div>`).join('') : `<div class="empty">Aucun événement dans cette catégorie.</div>`;
+}
+function toggleRSVP(btn){
+  const going = btn.textContent.includes('Inscrit');
+  btn.textContent = going ? "S'inscrire" : "✓ Inscrit";
+  btn.classList.toggle('secondary', !going);
+  toast(going ? 'Inscription annulée' : 'Inscription confirmée');
+}
+
+function renderAssociations(){
+  document.getElementById('assoGrid').innerHTML = DATA.associations.map(a=>`
+    <div class="card">
+      ${editTools('associations', a.id)}
+      <h3>${a.nom}</h3>
+      <p>${a.desc}</p>
+      <div class="card-foot">
+        <span style="font-size:12px; color:var(--ink-soft);">${a.contact}</span>
+        <button class="btn small secondary" onclick="toast('Demande d\\'adhésion envoyée')">Adhérer</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderOpps(){
+  const c=document.getElementById('oCat').value;
+  const list = DATA.opportunities.filter(o=>!c||o.cat===c);
+  document.getElementById('oppGrid').innerHTML = list.length ? list.map(o=>`
+    <div class="card">
+      ${editTools('opportunities', o.id)}
+      <div class="kicker">${o.cat}</div>
+      <h3>${o.titre}</h3>
+      <p>${o.org}</p>
+      <div class="card-foot">
+        <span class="tagpill">Limite : ${o.limite}</span>
+        <button class="btn small" onclick="toast('Candidature simulée envoyée')">Postuler</button>
+      </div>
+    </div>`).join('') : `<div class="empty">Aucune opportunité dans cette catégorie.</div>`;
+}
+
+function renderTeam(){
+  document.getElementById('teamGrid').innerHTML = DATA.team.map(m=>`
+    <div class="card">
+      ${editTools('team', m.id)}
+      <div class="tutor-row">
+        <div class="avatar">${m.nom[0]}</div>
+        <div class="info"><h3>${m.nom}</h3><p style="margin:0;">${m.role}</p></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderIdeas(){
+  const sorted = [...ideas].sort((a,b)=>b.votes-a.votes);
+  document.getElementById('ideaGrid').innerHTML = sorted.map(i=>`
+    <div class="card idea-card">
+      <div class="kicker">${i.cat} ${i.anon?'· Anonyme':''}</div>
+      <h3>${i.titre}</h3>
+      <p>${i.desc}</p>
+      <div class="status-track">
+        ${STATUTS.map((s,idx)=>`<span class="status-step ${idx<=i.statut?'done':''} ${isAdmin?'':''}" ${isAdmin?`onclick="setIdeaStatus('${i.id}',${idx})" style="cursor:pointer;"`:''}>${s}</span>`).join('')}
+      </div>
+      <div class="card-foot">
+        <button class="vote-btn ${i.voted?'voted':''}" onclick="voteIdea('${i.id}')">▲ ${i.votes}</button>
+      </div>
+    </div>`).join('');
+}
+function setIdeaStatus(id, statut){
+  if(!isAdmin) return;
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  idea.statut = statut;
+  persistIdeas();
+  toast('Statut mis à jour : '+STATUTS[statut]);
+  renderIdeas(); renderEspace();
+}
+function voteIdea(id){
+  const idea = ideas.find(i=>i.id===id);
+  if(!idea) return;
+  if(idea.voted){ idea.votes--; idea.voted=false; } else { idea.votes++; idea.voted=true; }
+  persistIdeas(); renderIdeas();
+}
+function submitIdea(ev){
+  ev.preventDefault();
+  const titre = document.getElementById('ideaTitle').value.trim();
+  const desc = document.getElementById('ideaDesc').value.trim();
+  const cat = document.getElementById('ideaCat').value;
+  const anon = document.getElementById('ideaAnon').checked;
+  if(!titre||!desc) return;
+  ideas.unshift({id:'u'+Date.now(), titre, desc, cat, anon, statut:0, votes:0, voted:false, mine:true});
+  persistIdeas();
+  ev.target.reset();
+  toast('Idée envoyée au BDE — merci pour votre contribution !');
+  renderIdeas();
+  renderEspace();
+}
+
+function renderHomeLists(){
+  document.getElementById('highlightList').innerHTML = [
+    ['Nouveau','Le classement des tuteurs les mieux notés est en ligne'],
+    ['Rappel','Pensez à valider votre inscription aux ateliers CV'],
+    ['BDE','3 idées viennent de passer en « En préparation »'],
+  ].map(([d,t])=>`<div class="mini-row"><span class="d">${d}</span><span class="t">${t}</span></div>`).join('');
+
+  document.getElementById('upcomingList').innerHTML = DATA.events.slice(0,4).map(e=>
+    `<div class="mini-row"><span class="d">${e.date}</span><span class="t">${e.titre}</span></div>`
+  ).join('');
+}
+
+function renderEspace(){
+  document.getElementById('myRequests').innerHTML = myRequests.length ? myRequests.map(r=>
+    `<div class="mini-row"><span class="t">Séance avec ${r.tuteur}</span><span class="d">${r.statut}</span></div>`
+  ).join('') : `<div class="empty">Vous n'avez pas encore de demande de tutorat.</div>`;
+
+  const mine = ideas.filter(i=>i.mine);
+  document.getElementById('myIdeas').innerHTML = mine.length ? mine.map(i=>
+    `<div class="mini-row"><span class="t">${i.titre}</span><span class="d">${STATUTS[i.statut]}</span></div>`
+  ).join('') : `<div class="empty">Vous n'avez pas encore soumis d'idée.</div>`;
+}
+
+function onGlobalSearch(q){
+  q = q.trim().toLowerCase();
+  if(!q) return;
+  if(DATA.resources.some(r=>r.titre.toLowerCase().includes(q))) showView('ressources');
+  else if(DATA.tutors.some(t=>t.nom.toLowerCase().includes(q))) showView('tutorat');
+  else if(DATA.events.some(e=>e.titre.toLowerCase().includes(q))) showView('evenements');
+  else if(DATA.opportunities.some(o=>o.titre.toLowerCase().includes(q))) showView('opportunites');
+}
+
+function renderAll(){
+  renderHomeLists();
+  renderResources();
+  renderTutors();
+  renderEvents();
+  renderAssociations();
+  renderOpps();
+  renderTeam();
+  renderIdeas();
+  renderEspace();
+}
+
+/* ---------------- Init ---------------- */
+loadState();
+applyAdminUI();
+renderAll();
+</script>
+</body>
+</html>
