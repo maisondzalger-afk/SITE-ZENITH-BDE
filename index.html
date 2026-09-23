@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Firebase (base de données partagée) : voir firebaseConfig dans le script en bas du fichier -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root{
     box-sizing:border-box;
@@ -605,6 +608,29 @@ const seedIdeas = [
 const STATUTS = ["Reçue","En étude","Validée","En préparation","Réalisée"];
 const ADMIN_PASSWORD = "002";
 
+/* ================================================================
+   CONFIGURATION FIREBASE — À REMPLIR
+   1. Va sur https://console.firebase.google.com, crée un projet gratuit
+   2. Ajoute une "appli Web" (icône </>) dans les paramètres du projet
+   3. Copie-colle les 6 valeurs qu'on te donne ci-dessous, à la place
+      des textes "COLLE_..._ICI"
+   4. Dans le menu de gauche, va dans "Firestore Database" → "Créer une
+      base de données" → mode "production" (les règles sont réglées juste après)
+   Tant que ces valeurs ne sont pas remplies, le site fonctionne quand
+   même, mais en mode local (comme avant) : chacun a sa propre copie.
+   ================================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAzvUmBsamVtX5wBfLdvPKbA3rRhYay_os",
+  authDomain: "zenith-esaa.firebaseapp.com",
+  projectId: "zenith-esaa",
+  storageBucket: "zenith-esaa.firebasestorage.app",
+  messagingSenderId: "637627156044",
+  appId: "1:637627156044:web:94a2a277e4d1d873e456e9"
+};
+let CLOUD_ON = false;
+let cloudDb = null;
+let unsubContent = null, unsubIdeas = null;
+
 /* ---------------- Field schemas for the generic editor ---------------- */
 const SCHEMAS = {
   team: {label:'un membre du BDE', fields:[
@@ -653,6 +679,7 @@ let ideas = [];
 let myRequests = [];
 let isAdmin = false;
 
+let votedIds = [];
 function loadState(){
   try{ DATA = JSON.parse(localStorage.getItem('zenith_data') || 'null') || JSON.parse(JSON.stringify(DEFAULTS)); }
   catch(e){ DATA = JSON.parse(JSON.stringify(DEFAULTS)); }
@@ -660,10 +687,59 @@ function loadState(){
   catch(e){ ideas = seedIdeas.map((i,idx)=>({...i,id:'seed'+idx,voted:false})); }
   try{ myRequests = JSON.parse(localStorage.getItem('zenith_requests') || '[]'); }catch(e){ myRequests = []; }
   try{ isAdmin = sessionStorage.getItem('zenith_admin') === '1'; }catch(e){ isAdmin = false; }
+  try{ votedIds = JSON.parse(localStorage.getItem('zenith_voted_ids') || '[]'); }catch(e){ votedIds = []; }
 }
-function persistData(){ try{ localStorage.setItem('zenith_data', JSON.stringify(DATA)); }catch(e){} }
+function persistData(){
+  try{ localStorage.setItem('zenith_data', JSON.stringify(DATA)); }catch(e){}
+  if(CLOUD_ON && cloudDb){
+    cloudDb.collection('zenith').doc('content').set(DATA).catch(err=>{
+      console.error(err); toast("Erreur d'enregistrement en ligne — vérifie ta connexion");
+    });
+  }
+}
 function persistIdeas(){ try{ localStorage.setItem('zenith_ideas', JSON.stringify(ideas)); }catch(e){} }
 function persistRequests(){ try{ localStorage.setItem('zenith_requests', JSON.stringify(myRequests)); }catch(e){} }
+function persistVotedIds(){ try{ localStorage.setItem('zenith_voted_ids', JSON.stringify(votedIds)); }catch(e){} }
+
+/* ---------------- Firebase (shared database) ---------------- */
+function initCloud(){
+  const looksFilled = Object.values(firebaseConfig).every(v => v && !String(v).startsWith('COLLE_'));
+  if(!looksFilled || typeof firebase === 'undefined'){
+    CLOUD_ON = false;
+    return; // stays in local mode, no error shown — this is expected until configured
+  }
+  try{
+    firebase.initializeApp(firebaseConfig);
+    cloudDb = firebase.firestore();
+    CLOUD_ON = true;
+
+    const contentRef = cloudDb.collection('zenith').doc('content');
+    unsubContent = contentRef.onSnapshot(snap=>{
+      if(snap.exists){
+        DATA = snap.data();
+      } else {
+        DATA = JSON.parse(JSON.stringify(DEFAULTS));
+        contentRef.set(DATA).catch(()=>{});
+      }
+      renderAll();
+    }, err=>{
+      console.error(err);
+      toast('Base de données inaccessible — vérifie les règles Firestore');
+    });
+
+    unsubIdeas = cloudDb.collection('zenith_ideas').onSnapshot(snap=>{
+      const list = [];
+      snap.forEach(doc=> list.push({id: doc.id, ...doc.data()}));
+      ideas = list.map(i=>({...i, voted: votedIds.includes(i.id)}));
+      renderIdeas(); renderEspace();
+    }, err=>{ console.error(err); });
+
+  }catch(e){
+    console.error(e);
+    CLOUD_ON = false;
+    toast('Connexion Firebase impossible — vérifie firebaseConfig');
+  }
+}
 
 function toast(msg){
   const t = document.getElementById('toast');
@@ -917,6 +993,11 @@ function renderIdeas(){
 }
 function setIdeaStatus(id, statut){
   if(!isAdmin) return;
+  if(CLOUD_ON){
+    cloudDb.collection('zenith_ideas').doc(id).update({statut}).catch(err=>{ console.error(err); toast('Erreur de mise à jour'); });
+    toast('Statut mis à jour : '+STATUTS[statut]);
+    return;
+  }
   const idea = ideas.find(i=>i.id===id);
   if(!idea) return;
   idea.statut = statut;
@@ -927,6 +1008,16 @@ function setIdeaStatus(id, statut){
 function voteIdea(id){
   const idea = ideas.find(i=>i.id===id);
   if(!idea) return;
+  const nowVoted = !idea.voted;
+  if(CLOUD_ON){
+    const delta = nowVoted ? 1 : -1;
+    cloudDb.collection('zenith_ideas').doc(id).update({votes: firebase.firestore.FieldValue.increment(delta)}).catch(err=>console.error(err));
+    if(nowVoted) votedIds.push(id); else votedIds = votedIds.filter(x=>x!==id);
+    persistVotedIds();
+    idea.voted = nowVoted; // optimistic, onSnapshot will confirm
+    renderIdeas();
+    return;
+  }
   if(idea.voted){ idea.votes--; idea.voted=false; } else { idea.votes++; idea.voted=true; }
   persistIdeas(); renderIdeas();
 }
@@ -937,12 +1028,17 @@ function submitIdea(ev){
   const cat = document.getElementById('ideaCat').value;
   const anon = document.getElementById('ideaAnon').checked;
   if(!titre||!desc) return;
-  ideas.unshift({id:'u'+Date.now(), titre, desc, cat, anon, statut:0, votes:0, voted:false, mine:true});
-  persistIdeas();
+  const newIdea = {titre, desc, cat, anon, statut:0, votes:0, mine:true};
+  if(CLOUD_ON){
+    cloudDb.collection('zenith_ideas').add(newIdea).catch(err=>{ console.error(err); toast("Erreur d'envoi"); });
+  } else {
+    ideas.unshift({...newIdea, id:'u'+Date.now(), voted:false});
+    persistIdeas();
+    renderIdeas();
+    renderEspace();
+  }
   ev.target.reset();
   toast('Idée envoyée au BDE — merci pour votre contribution !');
-  renderIdeas();
-  renderEspace();
 }
 
 function renderHomeLists(){
@@ -993,6 +1089,7 @@ function renderAll(){
 loadState();
 applyAdminUI();
 renderAll();
+initCloud();
 </script>
 </body>
 </html>
